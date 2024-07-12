@@ -1,0 +1,10 @@
+{
+    "name": "game",
+    "main": "index.html",
+    "scripts": {
+      "start": "nw ."
+    },
+    "devDependencies": {
+      "nw": "^0.58.0"
+    }
+  }

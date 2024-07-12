@@ -1,0 +1,63 @@
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #000;
+    color: #fff;
+    font-family: Arial, sans-serif;
+}
+
+#game-container {
+    position: relative;
+    width: 80vw;
+    height: 80vh;
+    border: 2px solid #fff;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    background-color: #000;
+}
+
+#hud {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    gap: 20px;
+    font-size: 20px;
+}
+
+.laser {
+    position: absolute;
+    width: 5px;
+    height: 20px;
+    background-color: red;
+}
+
+.target {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background-image: url('enemy1.png'); /* Replace with the path to your enemy image */
+    background-size: cover;
+}
+
+#player {
+    position: absolute;
+    bottom: 10px;
+    width: 50px;
+    height: 50px;
+    background-image: url('player.png'); /* Replace with the path to your player image */
+    background-size: cover;
+}
+
+#score, #tokens, #lives {
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px 10px;
+    border-radius: 5px;
+}

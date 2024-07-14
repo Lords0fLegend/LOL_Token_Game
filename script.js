@@ -17,10 +17,12 @@ backgroundImage.src = 'background-space-planets.png'; // Replace with the path t
 let score = 0;
 let tokens = 0;
 let lives = 5;
-const waves = 3;
+const waves = 5;
 let currentWave = 1;
-let gameOver = false;
 
+/**
+ * Enemy class representing enemies in the game.
+ */
 class Enemy {
     constructor(x, y) {
         this.x = x;
@@ -34,6 +36,9 @@ class Enemy {
         this.frame = 0;
     }
 
+    /**
+     * Update enemy position and animation frame.
+     */
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
@@ -68,6 +73,9 @@ class Enemy {
         }
     }
 
+    /**
+     * Draw enemy sprite on canvas.
+     */
     draw() {
         ctx.drawImage(
             enemyImage,
@@ -77,6 +85,9 @@ class Enemy {
     }
 }
 
+/**
+ * Laser class representing player's laser shots.
+ */
 class Laser {
     constructor(x, y) {
         this.x = x;
@@ -86,10 +97,16 @@ class Laser {
         this.speed = 5;
     }
 
+    /**
+     * Update laser position.
+     */
     update() {
         this.y -= this.speed;
     }
 
+    /**
+     * Draw laser on canvas.
+     */
     draw() {
         ctx.fillStyle = 'red';
         ctx.fillRect(this.x, this.y, this.width, this.height);
@@ -98,17 +115,26 @@ class Laser {
 
 const lasers = [];
 
+/**
+ * Create initial set of enemies.
+ */
 function createEnemies() {
     for (let i = 0; i < numberOfEnemies; i++) {
         enemiesArray.push(new Enemy(Math.random() * CANVAS_WIDTH, Math.random() * -CANVAS_HEIGHT));
     }
 }
 
+/**
+ * Handle shooting a laser from the player.
+ */
 function shootLaser() {
     const laser = new Laser(playerX + 20, playerY);
     lasers.push(laser);
 }
 
+/**
+ * Event listener for keyboard input to shoot lasers.
+ */
 window.addEventListener('keydown', function (e) {
     if (e.key === ' ' && !keys[' ']) {
         keys[' '] = true;
@@ -117,10 +143,16 @@ window.addEventListener('keydown', function (e) {
     keys[e.key] = true;
 });
 
+/**
+ * Event listener for releasing keys.
+ */
 window.addEventListener('keyup', function (e) {
     keys[e.key] = false;
 });
 
+/**
+ * Move player based on keyboard input.
+ */
 function movePlayer() {
     if (keys['ArrowRight'] && playerX < CANVAS_WIDTH - 50) {
         playerX += playerSpeed;
@@ -130,6 +162,10 @@ function movePlayer() {
     }
 }
 
+/**
+ * Update score and tokens based on game events.
+ * @param {number} points - Points to add to score.
+ */
 function updateScore(points) {
     score += points;
     document.getElementById('score').textContent = `Score: ${score}`;
@@ -139,6 +175,9 @@ function updateScore(points) {
     }
 }
 
+/**
+ * Reset game state for a new game.
+ */
 function resetGame() {
     score = 0;
     tokens = 0;
@@ -156,11 +195,17 @@ function resetGame() {
     animate(); // Restart the game loop
 }
 
+/**
+ * Handle end game event.
+ */
 function endGame() {
     gameOver = true;
     document.getElementById('game-over').style.display = 'block';
 }
 
+/**
+ * Main game loop to update and render game elements.
+ */
 function animate() {
     ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     ctx.drawImage(backgroundImage, 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -178,70 +223,40 @@ function animate() {
             ) {
                 enemiesArray.splice(index, 1);
                 lasers.splice(laserIndex, 1);
-                updateScore(2); // Update score by 2 points per enemy
-                if (enemiesArray.length === 0 && currentWave < waves) {
-                    currentWave++;
-                    createEnemies();
-                } else if (currentWave === waves && enemiesArray.length === 0) {
-                    endGame();
-                }
+                updateScore(5);
             }
         });
     });
 
-    lasers.forEach((laser, index) => {
+    lasers.forEach(laser => {
         laser.update();
         laser.draw();
-        if (laser.y < 0) {
-            lasers.splice(index, 1);
-        }
     });
 
+    movePlayer();
     ctx.drawImage(playerImage, playerX, playerY, 50, 50);
 
-    // Display HUD elements
-    ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText(`Score: ${score}`, 10, 30);
-    ctx.fillText(`Tokens: ${tokens.toFixed(2)}`, 10, 60);
-    ctx.fillText(`Lives: ${lives}`, 10, 90);
-
+    gameframe++;
     if (!gameOver) {
         requestAnimationFrame(animate);
-        gameframe++;
-        movePlayer();
     }
 }
 
+/**
+ * Resize canvas and reset player position.
+ */
 function resizeCanvas() {
-    CANVAS_WIDTH = canvas.width = window.innerWidth * 0.8; // 80% of the window's width
-    CANVAS_HEIGHT = canvas.height = window.innerHeight * 0.8; // 80% of the window's height
-    playerX = CANVAS_WIDTH / 2 - 25; // Center player horizontally
-    playerY = CANVAS_HEIGHT - 60; // Position player at the bottom
+    CANVAS_WIDTH = window.innerWidth * 0.8;
+    CANVAS_HEIGHT = window.innerHeight * 0.8;
+    canvas.width = CANVAS_WIDTH;
+    canvas.height = CANVAS_HEIGHT;
+    playerX = CANVAS_WIDTH / 2 - 25;
+    playerY = CANVAS_HEIGHT - 100;
 }
 
-// Touch event listeners for mobile controls
-canvas.addEventListener('touchstart', (e) => {
-    shootLaser();
-});
-
-canvas.addEventListener('touchmove', (e) => {
-    const touch = e.touches[0];
-    const touchX = touch.clientX - canvas.getBoundingClientRect().left;
-    if (touchX < playerX) {
-        playerX -= playerSpeed;
-    } else {
-        playerX += playerSpeed;
-    }
-});
-
-window.onload = () => {
+// Initialize game
+window.addEventListener('load', () => {
     resizeCanvas();
     createEnemies();
     animate();
-};
-
-window.onresize = resizeCanvas;
-
-document.getElementById('play-again-button').addEventListener('click', resetGame);
-
+});

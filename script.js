@@ -5,15 +5,15 @@ let CANVAS_WIDTH, CANVAS_HEIGHT;
 const enemiesArray = [];
 const numberOfEnemies = 10;
 const enemyImage = new Image();
-enemyImage.src = 'enemy1.png';
+enemyImage.src = 'enemy2.png';
 const playerImage = new Image();
-playerImage.src = 'player.png'; // Replace with the path to your player image
+playerImage.src = 'player1.png'; // Replace with the path to your player image
 let gameframe = 0;
 let playerX, playerY;
 const playerSpeed = 5;
 let keys = {};
 const backgroundImage = new Image();
-backgroundImage.src = 'background.png'; // Replace with the path to your background image
+backgroundImage.src = 'background-space-planets.png'; // Replace with the path to your background image
 let score = 0;
 let tokens = 0;
 let lives = 5;
@@ -27,8 +27,8 @@ class Enemy {
         this.y = y;
         this.speedX = Math.random() * 4 - 2;
         this.speedY = Math.random() * 2 + 1; // Move downwards
-        this.spriteWidth = 293;
-        this.spriteHeight = 155;
+        this.spriteWidth = 93;
+        this.spriteHeight = 102;
         this.height = this.spriteWidth / 2.5;
         this.width = this.spriteHeight / 2.5;
         this.frame = 0;

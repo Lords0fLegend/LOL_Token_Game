@@ -19,6 +19,7 @@ let tokens = 0;
 let lives = 5;
 const waves = 3;
 let currentWave = 1;
+let gameOver = false;
 
 class Enemy {
     constructor(x, y) {
@@ -26,7 +27,7 @@ class Enemy {
         this.y = y;
         this.speedX = Math.random() * 4 - 2;
         this.speedY = Math.random() * 2 + 1; // Move downwards
-        this.spriteWidth = 290;
+        this.spriteWidth = 293;
         this.spriteHeight = 155;
         this.height = this.spriteWidth / 2.5;
         this.width = this.spriteHeight / 2.5;
@@ -56,11 +57,14 @@ class Enemy {
             this.y + this.height > playerY
         ) {
             lives--;
-            if (lives === 0) {
-                resetGame();
+            document.getElementById('lives').textContent = `Lives: ${lives}`;
+            if (lives <= 0) {
+                endGame();
+            } else {
+                // Move enemy back to the top of the screen
+                this.y = 0 - this.height;
+                this.x = Math.random() * CANVAS_WIDTH;
             }
-            this.y = 0 - this.height;
-            this.x = Math.random() * CANVAS_WIDTH;
         }
     }
 
@@ -106,10 +110,11 @@ function shootLaser() {
 }
 
 window.addEventListener('keydown', function (e) {
-    keys[e.key] = true;
-    if (e.key === ' ') {
+    if (e.key === ' ' && !keys[' ']) {
+        keys[' '] = true;
         shootLaser();
     }
+    keys[e.key] = true;
 });
 
 window.addEventListener('keyup', function (e) {
@@ -128,8 +133,8 @@ function movePlayer() {
 function updateScore(points) {
     score += points;
     document.getElementById('score').textContent = `Score: ${score}`;
-    if (score % 100 === 0) {
-        tokens += 0.01;
+    if (score % 50 === 0) {
+        tokens += 0.1;
         document.getElementById('tokens').textContent = `Tokens: ${tokens.toFixed(2)}`;
     }
 }
@@ -145,6 +150,15 @@ function resetGame() {
     document.getElementById('score').textContent = `Score: ${score}`;
     document.getElementById('tokens').textContent = `Tokens: ${tokens.toFixed(2)}`;
     document.getElementById('lives').textContent = `Lives: ${lives}`;
+    gameOver = false;
+    document.getElementById('game-over').style.display = 'none';
+    resizeCanvas(); // Reset player position
+    animate(); // Restart the game loop
+}
+
+function endGame() {
+    gameOver = true;
+    document.getElementById('game-over').style.display = 'block';
 }
 
 function animate() {
@@ -164,12 +178,12 @@ function animate() {
             ) {
                 enemiesArray.splice(index, 1);
                 lasers.splice(laserIndex, 1);
-                updateScore(5);
+                updateScore(2); // Update score by 2 points per enemy
                 if (enemiesArray.length === 0 && currentWave < waves) {
                     currentWave++;
                     createEnemies();
                 } else if (currentWave === waves && enemiesArray.length === 0) {
-                    resetGame();
+                    endGame();
                 }
             }
         });
@@ -185,9 +199,18 @@ function animate() {
 
     ctx.drawImage(playerImage, playerX, playerY, 50, 50);
 
-    requestAnimationFrame(animate);
-    gameframe++;
-    movePlayer();
+    // Display HUD elements
+    ctx.fillStyle = 'white';
+    ctx.font = '20px Arial';
+    ctx.fillText(`Score: ${score}`, 10, 30);
+    ctx.fillText(`Tokens: ${tokens.toFixed(2)}`, 10, 60);
+    ctx.fillText(`Lives: ${lives}`, 10, 90);
+
+    if (!gameOver) {
+        requestAnimationFrame(animate);
+        gameframe++;
+        movePlayer();
+    }
 }
 
 function resizeCanvas() {
@@ -197,6 +220,21 @@ function resizeCanvas() {
     playerY = CANVAS_HEIGHT - 60; // Position player at the bottom
 }
 
+// Touch event listeners for mobile controls
+canvas.addEventListener('touchstart', (e) => {
+    shootLaser();
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    const touch = e.touches[0];
+    const touchX = touch.clientX - canvas.getBoundingClientRect().left;
+    if (touchX < playerX) {
+        playerX -= playerSpeed;
+    } else {
+        playerX += playerSpeed;
+    }
+});
+
 window.onload = () => {
     resizeCanvas();
     createEnemies();
@@ -204,3 +242,6 @@ window.onload = () => {
 };
 
 window.onresize = resizeCanvas;
+
+document.getElementById('play-again-button').addEventListener('click', resetGame);
+

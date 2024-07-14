@@ -32,32 +32,29 @@ canvas {
     font-size: 20px;
 }
 
-.laser {
+#game-over {
+    display: none;
     position: absolute;
-    width: 5px;
-    height: 20px;
-    background-color: red;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 20px;
+    border-radius: 10px;
 }
 
-.target {
-    position: absolute;
-    width: 40px;
-    height: 40px;
-    background-image: url('enemy1.png'); /* Replace with the path to your enemy image */
-    background-size: cover;
-}
-
-#player {
-    position: absolute;
-    bottom: 10px;
-    width: 50px;
-    height: 50px;
-    background-image: url('player.png'); /* Replace with the path to your player image */
-    background-size: cover;
-}
-
-#score, #tokens, #lives {
-    background: rgba(0, 0, 0, 0.5);
-    padding: 5px 10px;
+#game-over button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #fff;
+    color: #000;
+    border: none;
     border-radius: 5px;
+}
+
+#game-over button:hover {
+    background-color: #ddd;
 }

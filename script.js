@@ -19,6 +19,7 @@ let tokens = 0;
 let lives = 5;
 const waves = 5;
 let currentWave = 1;
+let gameOver; // Declare gameOver here
 
 /**
  * Enemy class representing enemies in the game.
@@ -29,20 +30,20 @@ class Enemy {
         this.y = y;
         this.speedX = Math.random() * 4 - 2;
         this.speedY = Math.random() * 2 + 1; // Move downwards
-        this.spriteWidth = 93;
-        this.spriteHeight = 102;
+        this.spriteWidth = 100  ;
+        this.spriteHeight = 125   ;
         this.height = this.spriteWidth / 2.5;
         this.width = this.spriteHeight / 2.5;
         this.frame = 0;
+        this.frameSpeed = 4; // Adjust this value to slow down or speed up the animation
     }
 
-    /**
-     * Update enemy position and animation frame.
-     */
     update() {
         this.x += this.speedX;
         this.y += this.speedY;
-        if (gameframe % 2 === 0) {
+        
+        // Slow down frame updates
+        if (gameframe % this.frameSpeed === 0) {
             this.frame > 4 ? this.frame = 0 : this.frame++;
         }
 
@@ -73,9 +74,6 @@ class Enemy {
         }
     }
 
-    /**
-     * Draw enemy sprite on canvas.
-     */
     draw() {
         ctx.drawImage(
             enemyImage,
@@ -84,6 +82,7 @@ class Enemy {
         );
     }
 }
+
 
 /**
  * Laser class representing player's laser shots.
@@ -260,3 +259,4 @@ window.addEventListener('load', () => {
     createEnemies();
     animate();
 });
+ 

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Game Registration</title>
+</head>
+<body>
+    <form action="register.php" method="post">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="fullname">Full Name:</label>
+        <input type="text" id="fullname" name="fullname" required><br>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" required><br>
+        <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required pattern=".{8,15}"><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>

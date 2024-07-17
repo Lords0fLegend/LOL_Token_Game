@@ -3,23 +3,25 @@ const canvas = document.getElementById('canvas1');
 const ctx = canvas.getContext('2d');
 let CANVAS_WIDTH, CANVAS_HEIGHT;
 const enemiesArray = [];
-const numberOfEnemies = 10;
-const enemyImage = new Image();
-enemyImage.src = 'enemy2.png';
-const playerImage = new Image();
-playerImage.src = 'player1.png'; // Replace with the path to your player image
-let gameframe = 0;
+const lasers = [];
 let playerX, playerY;
 const playerSpeed = 5;
-let keys = {};
+const enemyImage = new Image();                                                                                                                                                                                                                                                                                                           
+enemyImage.src = 'enemy2.png';
+const playerImage = new Image();
+playerImage.src = 'player1.png';
 const backgroundImage = new Image();
-backgroundImage.src = 'background-space-planets.png'; // Replace with the path to your background image
+backgroundImage.src = 'background-space-planets.png';
+const heartImage = new Image();
+heartImage.src = 'heart.png';
+let gameframe = 0;
+let keys = {};
 let score = 0;
 let tokens = 0;
 let lives = 5;
-const waves = 5;
 let currentWave = 1;
-let gameOver; // Declare gameOver here
+let gameOver = false;
+const maxWaves = 10;
 
 /**
  * Enemy class representing enemies in the game.
@@ -30,8 +32,8 @@ class Enemy {
         this.y = y;
         this.speedX = Math.random() * 4 - 2;
         this.speedY = Math.random() * 2 + 1; // Move downwards
-        this.spriteWidth = 100  ;
-        this.spriteHeight = 125   ;
+        this.spriteWidth = 100;
+        this.spriteHeight = 125;
         this.height = this.spriteWidth / 2.5;
         this.width = this.spriteHeight / 2.5;
         this.frame = 0;
@@ -42,12 +44,10 @@ class Enemy {
         this.x += this.speedX;
         this.y += this.speedY;
         
-        // Slow down frame updates
         if (gameframe % this.frameSpeed === 0) {
             this.frame > 4 ? this.frame = 0 : this.frame++;
         }
 
-        // Reset position if off screen
         if (this.y > CANVAS_HEIGHT) {
             this.y = 0 - this.height;
             this.x = Math.random() * CANVAS_WIDTH;
@@ -67,7 +67,6 @@ class Enemy {
             if (lives <= 0) {
                 endGame();
             } else {
-                // Move enemy back to the top of the screen
                 this.y = 0 - this.height;
                 this.x = Math.random() * CANVAS_WIDTH;
             }
@@ -83,7 +82,6 @@ class Enemy {
     }
 }
 
-
 /**
  * Laser class representing player's laser shots.
  */
@@ -96,28 +94,21 @@ class Laser {
         this.speed = 5;
     }
 
-    /**
-     * Update laser position.
-     */
     update() {
         this.y -= this.speed;
     }
 
-    /**
-     * Draw laser on canvas.
-     */
     draw() {
-        ctx.fillStyle = 'red';
+        ctx.fillStyle = 'lime';
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-
-const lasers = [];
 
 /**
  * Create initial set of enemies.
  */
 function createEnemies() {
+    const numberOfEnemies = 25 + (currentWave - 1) * 20;
     for (let i = 0; i < numberOfEnemies; i++) {
         enemiesArray.push(new Enemy(Math.random() * CANVAS_WIDTH, Math.random() * -CANVAS_HEIGHT));
     }
@@ -142,11 +133,18 @@ window.addEventListener('keydown', function (e) {
     keys[e.key] = true;
 });
 
-/**
- * Event listener for releasing keys.
- */
 window.addEventListener('keyup', function (e) {
     keys[e.key] = false;
+});
+
+window.addEventListener('touchstart', function (e) {
+    shootLaser();
+});
+
+window.addEventListener('touchmove', function (e) {
+    const touch = e.touches[0];
+    playerX = touch.clientX - 25;
+    playerY = touch.clientY - 25;
 });
 
 /**
@@ -159,17 +157,34 @@ function movePlayer() {
     if (keys['ArrowLeft'] && playerX > 0) {
         playerX -= playerSpeed;
     }
+    if (keys['ArrowUp'] && playerY > 0) {
+        playerY -= playerSpeed;
+    }
+    if (keys['ArrowDown'] && playerY < CANVAS_HEIGHT - 50) {
+        playerY += playerSpeed;
+    }
+    if (keys['w'] && playerY > 0) {
+        playerY -= playerSpeed;
+    }
+    if (keys['s'] && playerY < CANVAS_HEIGHT - 50) {
+        playerY += playerSpeed;
+    }
+    if (keys['a'] && playerX > 0) {
+        playerX -= playerSpeed;
+    }
+    if (keys['d'] && playerX < CANVAS_WIDTH - 50) {
+        playerX += playerSpeed;
+    }
 }
 
 /**
  * Update score and tokens based on game events.
- * @param {number} points - Points to add to score.
  */
 function updateScore(points) {
     score += points;
     document.getElementById('score').textContent = `Score: ${score}`;
-    if (score % 50 === 0) {
-        tokens += 0.1;
+    if (score % 60 === 0) {
+        tokens += 0.10;
         document.getElementById('tokens').textContent = `Tokens: ${tokens.toFixed(2)}`;
     }
 }
@@ -188,10 +203,11 @@ function resetGame() {
     document.getElementById('score').textContent = `Score: ${score}`;
     document.getElementById('tokens').textContent = `Tokens: ${tokens.toFixed(2)}`;
     document.getElementById('lives').textContent = `Lives: ${lives}`;
+    document.getElementById('wave').textContent = `Wave: ${currentWave}`;
     gameOver = false;
     document.getElementById('game-over').style.display = 'none';
-    resizeCanvas(); // Reset player position
-    animate(); // Restart the game loop
+    resizeCanvas();
+    animate();
 }
 
 /**
@@ -200,6 +216,8 @@ function resetGame() {
 function endGame() {
     gameOver = true;
     document.getElementById('game-over').style.display = 'block';
+    // Update the database with player stats here
+    updatePlayerStats();
 }
 
 /**
@@ -222,7 +240,7 @@ function animate() {
             ) {
                 enemiesArray.splice(index, 1);
                 lasers.splice(laserIndex, 1);
-                updateScore(5);
+                updateScore(10);
             }
         });
     });
@@ -245,12 +263,33 @@ function animate() {
  * Resize canvas and reset player position.
  */
 function resizeCanvas() {
-    CANVAS_WIDTH = window.innerWidth * 0.8;
-    CANVAS_HEIGHT = window.innerHeight * 0.8;
+    CANVAS_WIDTH = window.innerWidth * 0.85;
+    CANVAS_HEIGHT = window.innerHeight * 0.85;
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
     playerX = CANVAS_WIDTH / 2 - 25;
     playerY = CANVAS_HEIGHT - 100;
+}
+
+/**
+ * Advance to the next wave.
+ */
+function nextWave() {
+    currentWave++;
+    if (currentWave > maxWaves) {
+        endGame();
+    } else {
+        enemiesArray.length = 0;
+        createEnemies();
+        document.getElementById('wave').textContent = `Wave: ${currentWave}`;
+    }
+}
+
+/**
+ * Update player stats in the database.
+ */
+function updatePlayerStats() {
+    // Implement AJAX call to update player stats in the database
 }
 
 // Initialize game
@@ -259,4 +298,43 @@ window.addEventListener('load', () => {
     createEnemies();
     animate();
 });
- 
+
+// Implement pause, play again, and end game buttons
+document.getElementById('pause').addEventListener('click', () => {
+    gameOver = true;
+});
+
+document.getElementById('play-again').addEventListener('click', () => {
+    resetGame();
+});
+
+document.getElementById('end-game').addEventListener('click', () => {
+    endGame();
+});
+function updatePlayerStats() {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "update_stats.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            console.log(xhr.responseText);
+        }
+    };
+    xhr.send(`score=${score}&tokens=${tokens}`);
+}
+function loginUser(username, password) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "login.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState == 4 && xhr.status == 200) {
+            if (xhr.responseText === "Login successful.") {
+                console.log("User logged in.");
+                // Redirect to game page or initialize game
+            } else {
+                console.log("Login failed: " + xhr.responseText);
+            }
+        }
+    };
+    xhr.send(`username=${username}&password=${password}`);
+}

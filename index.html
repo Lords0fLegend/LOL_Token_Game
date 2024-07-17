@@ -3,23 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shooting Game</title>
+    <title>Space Shooter Game</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="canvas1"></canvas>
-        <div id="hud">
-            <div id="score">Score: 0</div>
-            <div id="tokens">Tokens: 0.00</div>
-            <div id="lives">Lives: 5</div>
-        </div>
-        <div id="game-over" style="display: none;">
-            <h1>Game Over</h1>
-            <button id="play-again-button" style="display: none;">Play Again</button>
-            <button id="end-game-button" style="display: none;">End Game</button>
-        </div>
+    <canvas id="canvas1"></canvas>
+    <div id="game-info">
+        <p id="score">Score: ${score}</p>
+        <p id="tokens">Tokens: ${tokens.toFixed(2)}</p>
+        <p id="lives">Lives: ${lives}</p>
+        <p id="wave">Wave: ${currentWave}</p>
     </div>
-    <script src="script.js"></script>
-</body>
+    <div id="game-over" style="display:none;">
+        <h2>Game Over</h2>
+        <p>Final Score: <span id="final-score"></span></p>
+        <p>Tokens Earned: <span id="final-tokens"></span></p>
+        <button id="reset-button">Play Again</button>
+    </div>
+    <button id="pause-button">Pause</button>
+    <script src="test.js"></script>
+</body>       
 </html>
+
+ 
+`;

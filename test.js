@@ -237,7 +237,6 @@ function pauseGame() {
 function endGame() {
     gameOver = true;
     document.getElementById('game-over').style.display = 'block';
-    updatePlayerStats(playerId, username, score, roundsPlayed, roundsWon, roundsLost, tokens);
 }
 
 /**
@@ -282,6 +281,9 @@ function animate() {
             laser.update();
             laser.draw();
         });
+
+        // Draw player
+        ctx.drawImage(playerImage, playerX, playerY, 50, 50);
 
         // Check laser-enemy collisions
         for (let i = 0; i < lasers.length; i++) {
@@ -330,30 +332,30 @@ function resizeCanvas() {
 
 window.addEventListener('resize', resizeCanvas);
 
+/**
+ * Load all images and start the game.
+ */
+function loadImages() {
+    let imagesLoaded = 0;
+    const images = [enemyImage, playerImage, backgroundImage, heartImage];
+    images.forEach((image) => {
+        image.onload = () => {
+            imagesLoaded++;
+            if (imagesLoaded === images.length) {
+                // Initial setup
+                resizeCanvas();
+                createEnemies();
+                animate();
+            }
+        };
+    });
+}
+
 document.getElementById('reset-button').addEventListener('click', resetGame);
 document.getElementById('pause-button').addEventListener('click', pauseGame);
 
-// Initial setup
-resizeCanvas();
-createEnemies();
-animate();
+// Load images and start the game
+loadImages();
 
-/**
- * Send player stats to the server.
- */
-function updatePlayerStats(playerId, username, score, roundsPlayed, roundsWon, roundsLost, tokens) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'update_player_stats.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    const data = JSON.stringify({
-        playerId,
-        username,
-        score,
-        roundsPlayed,
-        roundsWon,
-        roundsLost,
-        tokens
-    });
-    xhr.send(data);
-}
+
 

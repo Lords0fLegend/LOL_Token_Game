@@ -1,0 +1,83 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background: #222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: 'Comic Sans MS', sans-serif;
+}
+
+#canvas1 {
+    border: 10px solid #000;
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+#game-over, .game-stats {
+    position: absolute;
+    color: white;
+    font-size: 20px;
+}
+
+#game-over {
+    display: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+}
+
+.game-stats {
+    top: 10px;
+    left: 10px;
+}
+
+
+
+#reset-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    padding: 10px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: red;
+}
+
+#pause-button {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    padding: 10px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: red;
+}
+
+#play-again-button {
+    padding: 10px;
+    background: #fff;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    color: red;
+    position: absolute;
+    display: none;
+    transform: translate(-50%, -50%);
+}
+#end-game-button {
+    cursor: pointer;
+    color:red;
+    border:none;
+    background:#fff ;
+    position:absolute;
+    transform: translate(-40%, -50%);
+}

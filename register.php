@@ -10,31 +10,34 @@ ob_start();
 
 try {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $first_name = $_POST['first_name'];
+        $last_name = $_POST['last_name'];
         $username = $_POST['username'];
         $email = $_POST['email'];
         $dob = $_POST['dob'];
         $password = $_POST['password'];
 
-        // Check if username or email already exists
-        $sql = "SELECT * FROM users WHERE username=? OR email=?";
+        $age = date_diff(date_create($dob), date_create('today'))->y;
+        if ($age < 13) {
+            echo "You must be at least 13 years old to register.";
+            exit();
+        }
+
+        $sql = "SELECT * FROM Users WHERE username=? OR email=?";
         if ($stmt = $conn->prepare($sql)) {
             $stmt->bind_param("ss", $username, $email);
             $stmt->execute();
             $result = $stmt->get_result();
-
             if ($result->num_rows > 0) {
                 echo "Username or Email already taken. Please choose a different one.";
             } else {
-                // Hash the password before storing it
                 $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-
-                // Insert new user into the database
-                $sql = "INSERT INTO users (username, email, dob, password) VALUES (?, ?, ?, ?)";
+                $sql = "INSERT INTO Users (first_name, last_name, username, email, dob, password) VALUES (?, ?, ?, ?, ?, ?)";
                 if ($stmt = $conn->prepare($sql)) {
-                    $stmt->bind_param("ssss", $username, $email, $dob, $hashed_password);
+                    $stmt->bind_param("ssssss", $first_name, $last_name, $username, $email, $dob, $hashed_password);
                     if ($stmt->execute()) {
                         $_SESSION['username'] = $username;
-                        $_SESSION['user_Id'] = $stmt->insert_id; // Use the insert ID to set user_Id
+                        $_SESSION['user_Id'] = $stmt->insert_id;
                         $_SESSION['login_time'] = time();
                         header("Location: game.php");
                         ob_end_flush();

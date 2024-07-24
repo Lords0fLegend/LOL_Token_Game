@@ -1,7 +1,7 @@
 body {
+    background-color: #ffffff; /* Changed to white */
     margin: 0;
     overflow: hidden;
-    background: #222;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -9,13 +9,127 @@ body {
     font-family: 'Comic Sans MS', sans-serif;
 }
 
+.container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+h2 {
+    margin-bottom: 20px;
+    color: #333333;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    width: 75%;
+    display: block;
+    border: 2px solid orange;
+    margin-bottom: 5px;
+    color: #555555;
+}
+
+.form-group input {
+    width: 75%;
+    padding: 8px;
+    border: 2px solid #8ce315;
+    border-radius: 4px;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: 2px solid #8ce315; /* Same border color as reset button */
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: blue; /* Change color to blue on hover */
+}
+
 #canvas1 {
+    display: block;
+    margin: 0 auto;
     border: 10px solid #000;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
-#game-over, .game-stats {
+.game-stats {
+    color: black;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    font-size: 1.2em;
+    position: absolute;
+    left: 10px; /* Positioned at the top-left corner */
+    top: 10px;
+}
+
+#reset-button,
+#pause-button,
+#play-again-button,
+#end-game-button {
+    padding: 10px;
+    background: #fff;
+    border: 2px solid #8ce315; /* Same border color as reset button */
+    cursor: pointer;
+    font-size: 16px;
+    color: red;
+    position: absolute;
+}
+
+#reset-button:hover,
+#pause-button:hover,
+#play-again-button:hover,
+#end-game-button:hover {
+    background-color: blue; /* Change color to blue on hover */
+}
+
+#reset-button {
+    bottom: 10px;
+    right: 10px; /* Positioned at the bottom-right corner */
+}
+
+#pause-button {
+    bottom: 10px;
+    left: 10px; /* Positioned at the bottom-left corner */
+}
+
+#play-again-button,
+#end-game-button {
+    display: none;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%; /* Centered on the game over screen */
+}
+
+#game-over {
+    display: none;
+    font-size: 3em;
+    text-align: center;
+    color: red;
+    margin-top: 20px;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+#game-over {
     position: absolute;
     color: white;
     font-size: 20px;
@@ -31,53 +145,14 @@ body {
     border-radius: 10px;
 }
 
-.game-stats {
-    top: 10px;
-    left: 10px;
+@media (orientation: landscape) {
+    body {
+        flex-direction: row;
+    }
 }
 
-
-
-#reset-button {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    padding: 10px;
-    background: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    color: red;
-}
-
-#pause-button {
-    position: absolute;
-    bottom: 10px;
-    left: 10px;
-    padding: 10px;
-    background: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    color: red;
-}
-
-#play-again-button {
-    padding: 10px;
-    background: #fff;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    color: red;
-    position: absolute;
-    display: none;
-    transform: translate(-50%, -50%);
-}
-#end-game-button {
-    cursor: pointer;
-    color:red;
-    border:none;
-    background:#fff ;
-    position:absolute;
-    transform: translate(-40%, -50%);
+@media (orientation: portrait) {
+    body {
+        flex-direction: column;
+    }
 }

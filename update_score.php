@@ -1,66 +1,76 @@
 <?php
-session_start();
-$servername = "localhost";
-$username = "markxwyo_laserteam";
-$password = "Homiez@420";
-$dbname = "markxwyo_player_stats_LaserGame";
+include "db.php";
 
-// Enable error logging
-ini_set('log_errors', 1);
-ini_set('error_log', 'error_log.txt');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// Log file path
+$logFile = 'error_log.txt';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Function to log messages
+function logMessage($message) {
+    global $logFile;
+    file_put_contents($logFile, date('Y-m-d H:i:s') . " - " . $message . "\n", FILE_APPEND);
 }
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $user_Id = $_POST['user_Id'];
-    $username = $_POST['username'];
+// Fetch user data from update_stats table
+$user_id = $_POST['user_Id'];
+$sql = "SELECT User_ID, High_Score, Total_Rounds_Played, Total_Rounds_Lost, Total_Rounds_Won, Total_Tokens FROM update_stats WHERE User_ID = ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    logMessage("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+    die("Prepare failed");
+}
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$user = $result->fetch_assoc();
+
+if ($user) {
+    // Log retrieved values
+    logMessage("Retrieved Values: " . print_r($user, true));
+
+    // Get data from game-script.js
     $score = $_POST['score'];
     $roundsPlayed = $_POST['roundsPlayed'];
     $roundsWon = $_POST['roundsWon'];
     $roundsLost = $_POST['roundsLost'];
-    $tokens = $_POST['tokens'];
+    $tokens = (float)$_POST['tokens'];
 
-    // Debugging: print input values
-    error_log("User ID: $user_Id, Username: $username, Score: $score, Rounds Played: $roundsPlayed, Rounds Won: $roundsWon, Rounds Lost: $roundsLost, Tokens: $tokens");
+    // Log received values before addition
+    logMessage("Received Values from Game: score=$score, roundsPlayed=$roundsPlayed, roundsWon=$roundsWon, roundsLost=$roundsLost, tokens=$tokens");
 
-    $sql = "SELECT High_Score, Total_Tokens, Total_Rounds_Played, Total_Rounds_Won, Total_Rounds_Lost FROM Users WHERE User_ID=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $user_Id);
-    $stmt->execute();
-    $stmt->bind_result($existingScore, $existingTokens, $existingRoundsPlayed, $existingRoundsWon, $existingRoundsLost);
-    $stmt->fetch();
-    $stmt->close();
+    // Calculate new values
+    $newTotalRoundsPlayed = $user['Total_Rounds_Played'] + $roundsWon + $roundsLost;
+    $newTotalRoundsWon = $user['Total_Rounds_Won'] + $roundsWon;
+    $newTotalRoundsLost = $user['Total_Rounds_Lost'] + $roundsLost;
+    $newTotalTokens = $user['Total_Tokens'] + $tokens; // Ensure tokens are treated as floats
+    $newHighScore = max($user['High_Score'], $score);
 
-    // Debugging: print existing values
-    error_log("Existing Score: $existingScore, Existing Tokens: $existingTokens, Existing Rounds Played: $existingRoundsPlayed, Existing Rounds Won: $existingRoundsWon, Existing Rounds Lost: $existingRoundsLost");
+    // Log new values
+    logMessage("New Total Rounds Played: " . $newTotalRoundsPlayed);
+    logMessage("New Total Rounds Won: " . $newTotalRoundsWon);
+    logMessage("New Total Rounds Lost: " . $newTotalRoundsLost);
+    logMessage("New Total Tokens: " . $newTotalTokens);
+    logMessage("New High Score: " . $newHighScore);
 
-    $newScore = max($existingScore, $score);
-    $newTokens = $existingTokens + $tokens;
-    $newRoundsPlayed = $existingRoundsPlayed + $roundsPlayed;
-    $newRoundsWon = $existingRoundsWon + $roundsWon;
-    $newRoundsLost = $existingRoundsLost + $roundsLost;
-
-    // Debugging: print new values
-    error_log("New Score: $newScore, New Tokens: $newTokens, New Rounds Played: $newRoundsPlayed, New Rounds Won: $newRoundsWon, New Rounds Lost: $newRoundsLost");
-
-    $sql = "UPDATE Users SET High_Score=?, Total_Rounds_Played=?, Total_Rounds_Won=?, Total_Rounds_Lost=?, Total_Tokens=? WHERE User_ID=?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("iidiii", $newScore, $newRoundsPlayed, $newRoundsWon, $newRoundsLost, $newTokens, $user_Id);
-
-    if ($stmt->execute()) {
-        echo "Record updated successfully";
-    } else {
-        echo "Error updating record: " . $stmt->error;
+    // Update the database
+    $updateSql = "UPDATE update_stats SET High_Score = ?, Total_Rounds_Played = ?, Total_Rounds_Lost = ?, Total_Rounds_Won = ?, Total_Tokens = ? WHERE User_ID = ?";
+    $updateStmt = $conn->prepare($updateSql);
+    if (!$updateStmt) {
+        logMessage("Prepare failed: (" . $conn->errno . ") " . $conn->error);
+        die("Prepare failed");
     }
+    $updateStmt->bind_param("iiiiid", $newHighScore, $newTotalRoundsPlayed, $newTotalRoundsLost, $newTotalRoundsWon, $newTotalTokens, $user_id);
 
-    $stmt->close();
+    if ($updateStmt->execute()) {
+        logMessage('Updated successfully');
+    } else {
+        logMessage("Error updating record: " . $updateStmt->error);
+        die("Error updating record: " . $updateStmt->error);
+    }
+} else {
+    logMessage("No user found with User_ID: " . $user_id);
+    die("No user found with User_ID: " . $user_id);
 }
 
+// Close connection
 $conn->close();
 ?>

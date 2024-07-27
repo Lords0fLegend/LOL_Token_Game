@@ -27,6 +27,7 @@ h2 {
 }
 
 .form-group label {
+    
     display: block;
     margin-bottom: 5px;
     color: #555555;
@@ -35,7 +36,7 @@ h2 {
 .form-group input {
     width: 100%;
     padding: 8px;
-    border: 1px solid #cccccc;
+    border: 5px solid white;
     border-radius: 4px;
     box-sizing: border-box;
 }

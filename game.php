@@ -14,42 +14,70 @@ $user_id = $_SESSION['User_ID'];
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game</title>
-    <link rel="icon" href="favicon.png" type="image/png">
-    <link rel="stylesheet" href="styles.css">
+    <title>Asteroids</title>
     <style>
         body {
-            background-image: url('login_background.png');
-            background-size: cover;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: rgb(153, 60, 60);
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        #gameContainer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 85%;
+        }
+        #gameCanvas {
+            width: 100%;
+            height: 85vh;
+            background-color: #000;
+            display: block;
+            margin-bottom: 10px;
+        }
+        #stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+        }
+        #controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
         }
     </style>
 </head>
-
 <body>
-<div id="user-info" data-username="<?php echo $username; ?>" data-user-id="<?php echo $user_id; ?>"></div>
-    <div class="game-stats" id="game-stats">
-        <span id="score">Score: 0</span>
-        <span id="tokens">Tokens: 0</span>
-        <span id="lives">Lives: 5</span>
-        <span id="current-wave">Wave: 1</span>
-        <span id="rounds-won">Rounds Won: 0</span>
-        <span id="rounds-lost">Rounds Lost: 0</span>
+    <div id="gameContainer">
+        <div id="stats">
+            <div id="lives">Lives: 3</div>
+            <div id="score">Score: 0</div>
+            <div id="highScore">Best: 0</div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div id="controls">
+            <button id="pauseBtn">Pause</button>
+            <button id="resumeBtn" disabled>Resume</button>
+            <button id="resetBtn">Reset</button>
+        </div>
     </div>
-    <canvas id="canvas1"></canvas>
-    <div id="game-over-container">
-        <button id="play-again-button">Play Again</button>
-        <div id="game-over">Game Over</div>
-        <button id="end-game-button">End Game</button>
-    </div>
-    <div id="congratulations" style="display:none;">
-        <h1>Congratulations! You made it to the last round!</h1>
-        <h2>Here's 100 tokens!</h2>
-    </div>
-    <canvas id="fireworks" style="display:none; position:absolute; top:0; left:0; pointer-events:none;"></canvas>
-
-
-    <script src="game-script.js"></script>
+   <script src="game-script.js"></script>
 </body>
-</html>
-
+</html

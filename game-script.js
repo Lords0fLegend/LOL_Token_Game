@@ -1,3 +1,4 @@
+// game-script.js
 // Preload images for better performance
 const enemyImages = {
     boss: 'boss.png',
@@ -175,11 +176,32 @@ function update() {
     drawShip(ship.x, ship.y, ship.a);
     requestAnimationFrame(update);
 }
+function sendGameDataToServer(score, roundsPlayed, roundsWon, roundsLost, tokens) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "path_to_your_php_file.php", true);  // Replace with your actual PHP file path
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    // Handle response
+    xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4 && xhr.status === 200) {
+            console.log("Game data successfully sent to the server");
+        } else if (xhr.readyState === 4) {
+            console.log("Failed to send game data to the server");
+        }
+    };
+
+    // Prepare data to send
+    const data = `score=${score}&roundsPlayed=${roundsPlayed}&roundsWon=${roundsWon}&roundsLost=${roundsLost}&tokens=${tokens}&user_Id=${userId}`;
+    
+    // Send the request
+    xhr.send(data);
+}
 
 function handlePlayerEnemyCollision() {
     lives--; // Decrement lives
     if (lives <= 0) {
         alert("Game Over! You've lost all your lives.");
+        sendGameDataToServer(score, newTotalRoundsPlayed, newTotalRoundsWon, newTotalRoundsLost, newTotalTokens);
         resetGame(); // Call resetGame() to start over
     } else {
         resetShip(); // Reset the ship's position and thrust

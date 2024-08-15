@@ -1,5 +1,4 @@
 body {
-    
     background-color: #ffffff;
     margin: 0;
     overflow: hidden;
@@ -9,34 +8,59 @@ body {
     height: 100vh;
     font-family: 'Comic Sans MS', sans-serif;
     flex-direction: column;
-    color:white;
+    color: white;
 }
 
 .game-stats {
-    
     display: flex;
     justify-content: space-around;
     padding: 10px;
-    font-size: 1.2em;
+    font-size: 1.5em;
     width: 100%;
     max-width: 600px;
     position: absolute;
     top: 10px;
+    background: #333;
+    color: #8ce315;
+    border: 6px solid #8ce315;
+    border-radius: 10px;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 0.1em;
 }
 
 #canvas1 {
-    
     display: block;
     margin: 0 auto;
-    border: 20px solid black;
+    border: 6px solid lime;
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    max-width: 100%;
+    width: 90%;
+    max-width: px;
     height: auto;
+}
+#game-over, #congratulations {
+    display: none;
+    font-size: 50px;
+    text-align: center;
+    color: red;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#congratulations, h1 {
+    font-size: 60px;
+    color: yellow;
+    text-shadow: 2px 2px 4px #000;
+}
+
+#congratulations, h2 {
+    font-size: 40px;
+    color: gold;
+    text-shadow: 2px 2px 4px #000;
 }
 
 #game-over {
-    
     display: none;
     font-size: 10em;
     text-align: center;
@@ -51,7 +75,6 @@ body {
 }
 
 button {
-    
     display: block;
     margin: 10px auto;
     padding: 10px;
@@ -63,7 +86,6 @@ button {
 #pause-button,
 #play-again-button,
 #end-game-button {
-    
     padding: 10px;
     background: #fff;
     border: 2px solid #8ce315;
@@ -77,8 +99,8 @@ button {
 #pause-button:hover,
 #play-again-button:hover,
 #end-game-button:hover {
-    
-    background-color: 'navy blue';
+    background-color: navy;
+    color: white;
 }
 
 #reset-button {
@@ -107,7 +129,8 @@ button {
 
 @media (max-width: 768px) {
     .game-stats {
-        font-size: 1em;
+        font-size: 1.2em;
+        padding: 8px;
     }
 
     #reset-button, #pause-button, #play-again-button, #end-game-button {
@@ -116,14 +139,15 @@ button {
     }
 
     #game-over {
-        font-size: 2em;
+        font-size: 5em;
         padding: 10px;
     }
 }
 
 @media (max-width: 480px) {
     .game-stats {
-        font-size: 0.8em;
+        font-size: 1em;
+        padding: 6px;
     }
 
     #reset-button, #pause-button, #play-again-button, #end-game-button {
@@ -132,7 +156,52 @@ button {
     }
 
     #game-over {
-        font-size: 1.5em;
+        font-size: 3em;
         padding: 8px;
     }
 }
+#game-over-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+#game-over {
+    display: none;
+    font-size: 50px;
+    text-align: center;
+    color: red;
+    margin: 20px 0;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+button {
+    display: none;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 1em;
+    cursor: pointer;
+    background: #fff;
+    border: 2px solid #8ce315;
+    color: red;
+    position: relative;
+}
+
+button:hover {
+    background-color: navy;
+    color: white;
+}
+
+#play-again-button {
+    margin-bottom: 20px;
+}
+
+#end-game-button {
+    margin-top: 20px;
+}
+ 

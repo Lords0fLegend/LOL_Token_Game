@@ -1,9 +1,9 @@
 <?php
+
+include "db.php";
+
 session_start();
-$servername = "localhost";
-$dbusername = "markxwyo_laserteam";
-$dbpassword = "Homiez@420";
-$dbname = "markxwyo_player_stats_LaserGame";
+
 
 // Enable error logging
 ini_set('log_errors', 1);
@@ -11,15 +11,18 @@ ini_set('error_log', 'error_log.txt');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-function redirectWithError($message) {
+function redirectWithError($conn, $message) {
+    if ($conn) {
+        $conn->close(); // Close the connection before exiting
+    }
     $_SESSION['error_message'] = $message;
     header("Location: index.php");
     exit();
 }
 
 try {
-    // Establish database connection
-    $conn = new mysqli($servername, $dbusername, $dbpassword, $dbname);
+    // Establish database connection using variables from db.php
+    $conn = new mysqli($host, $user, $pass, $db);
     if ($conn->connect_error) {
         throw new Exception("Connection failed: " . $conn->connect_error);
     }
@@ -52,21 +55,25 @@ try {
                 $_SESSION['User_ID'] = $user_id;
                 $_SESSION['login_time'] = time();
                 
-                // Redirect to game page
+                // Close the connection and redirect to game page
+                $stmt->close();
+                $conn->close();
                 header("Location: game.php");
                 exit();
             } else {
-                redirectWithError("Invalid credentials, please try again.");
+                redirectWithError($conn, "Invalid credentials, please try again.");
             }
         } else {
-            redirectWithError("Invalid credentials, please try again.");
+            redirectWithError($conn, "Invalid credentials, please try again.");
         }
-        $stmt->close();
+        
     }
 } catch (Exception $e) {
+    if (isset($conn)) {
+        $conn->close(); // Ensure the connection is closed on exception
+    }
     error_log($e->getMessage());
-    redirectWithError("An error occurred. Please try again later.");
-} finally {
-    $conn->close();
+    redirectWithError(null, "An error occurred. Please try again later.");
 }
-?>
+
+

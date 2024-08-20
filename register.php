@@ -79,4 +79,4 @@ try {
     logMessage("Error: " . $e->getMessage());
     die("Registration failed: " . $e->getMessage());
 }
-?>
+

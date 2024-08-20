@@ -109,6 +109,11 @@ $user_id = $_SESSION['User_ID'];
         var level, lives, roids, score, scoreHigh, ship, text, textAlpha, gameInterval;
         var isPaused = false;
 
+        // Tracking variables
+        var roundsPlayed = 0;
+        var roundsWon = 0;
+        var roundsLost = 0;
+
         document.getElementById("pauseBtn").addEventListener("click", pauseGame);
         document.getElementById("resumeBtn").addEventListener("click", resumeGame);
         document.getElementById("resetBtn").addEventListener("click", resetGame);
@@ -276,6 +281,8 @@ $user_id = $_SESSION['User_ID'];
             ship.dead = true;
             text = "Game Over";
             textAlpha = 1.0;
+            roundsLost++;
+            endGame(false);
         }
 
         function keyDown(ev) {
@@ -320,6 +327,10 @@ $user_id = $_SESSION['User_ID'];
             level = 0;
             lives = GAME_LIVES;
             score = 0;
+            roundsPlayed = 0;
+            roundsWon = 0;
+            roundsLost = 0;
+            tokensCollected = 0;
             ship = newShip();
 
             var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
@@ -379,7 +390,6 @@ $user_id = $_SESSION['User_ID'];
                 y: y,
                 r: 10,  // radius of the token
                 collected: false
-                
             };
 
             tokens.push(token);
@@ -405,7 +415,7 @@ $user_id = $_SESSION['User_ID'];
             tokens.forEach((token) => {
                 if (!token.collected && distBetweenPoints(ship.x, ship.y, token.x, token.y) < ship.r + token.r) {
                     token.collected = true;
-                    tokensCollected += 1;  // Increase score by 50 points when token is collected
+                    tokensCollected += 1;
                     updateUI();
                 }
             });
@@ -580,6 +590,12 @@ $user_id = $_SESSION['User_ID'];
                         if (distBetweenPoints(ship.x, ship.y, roids[i].x, roids[i].y) < ship.r + roids[i].r) {
                             explodeShip();
                             destroyEnemy(i);
+                            lives--;
+                            if (lives == 0) {
+                                gameOver();
+                            } else {
+                                ship = newShip();
+                            }
                             break;
                         }
                     }
@@ -644,7 +660,7 @@ $user_id = $_SESSION['User_ID'];
                 }
             }
 
-            for (var i = 0; i < roids.length; i++) {
+            for (var i = roids.length - 1; i >= 0; i--) {
                 roids[i].x += roids[i].xv;
                 roids[i].y += roids[i].yv;
 
@@ -659,6 +675,41 @@ $user_id = $_SESSION['User_ID'];
                     roids[i].y = 0 - roids[i].r;
                 }
             }
+        }
+
+        // Call this function when the game ends to determine win/loss
+        function endGame(isWin) {
+            roundsPlayed++;
+            if (isWin) {
+                roundsWon++;
+            } else {
+                roundsLost++;
+            }
+
+            // Send data to the server
+            sendGameData();
+        }
+
+        // Function to send game data to the server
+        function sendGameData() {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "update_score.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+            var params = "user_Id=" + encodeURIComponent(<?php echo $user_id; ?>) +
+                         "&score=" + encodeURIComponent(score) +
+                         "&roundsPlayed=" + encodeURIComponent(roundsPlayed) +
+                         "&roundsWon=" + encodeURIComponent(roundsWon) +
+                         "&roundsLost=" + encodeURIComponent(roundsLost) +
+                         "&tokens=" + encodeURIComponent(tokensCollected);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    console.log("Score updated successfully.");
+                }
+            };
+
+            xhr.send(params);
         }
     </script>
 </body>

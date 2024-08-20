@@ -28,20 +28,20 @@ if ($user) {
     logMessage("Retrieved Values: " . print_r($user, true));
 
     // Get data from game-script.js
-    $score = $_POST['score'];
-    $roundsPlayed = $_POST['roundsPlayed'];
-    $roundsWon = $_POST['roundsWon'];
-    $roundsLost = $_POST['roundsLost'];
+    $score = (int)$_POST['score'];
+    $roundsPlayed = (int)$_POST['roundsPlayed'];
+    $roundsWon = (int)$_POST['roundsWon'];
+    $roundsLost = (int)$_POST['roundsLost'];
     $tokens = (float)$_POST['tokens'];
 
     // Log received values before addition
     logMessage("Received Values from Game: score=$score, roundsPlayed=$roundsPlayed, roundsWon=$roundsWon, roundsLost=$roundsLost, tokens=$tokens");
 
     // Calculate new values
-    $newTotalRoundsPlayed = $user['Total_Rounds_Played'] + $roundsWon + $roundsLost;
+    $newTotalRoundsPlayed = $user['Total_Rounds_Played'] + $roundsPlayed;
     $newTotalRoundsWon = $user['Total_Rounds_Won'] + $roundsWon;
     $newTotalRoundsLost = $user['Total_Rounds_Lost'] + $roundsLost;
-    $newTotalTokens = $user['Total_Tokens'] + $tokens; // Ensure tokens are treated as floats
+    $newTotalTokens = $user['Total_Tokens'] + $tokens; 
     $newHighScore = max($user['High_Score'], $score);
 
     // Log new values

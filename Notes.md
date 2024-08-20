@@ -1,6 +1,5 @@
 # Lords OF Legend Game Development Notes
 
----
 
 ## 1. Fix Combo Counter
 
@@ -8,7 +7,6 @@
 - **Current Issues**: The counter isn't resetting correctly after a missed shot, and sometimes it doesn’t increment on consecutive hits.
 - **Action Items**: Review the logic for combo detection, ensure it resets properly on miss, and increments correctly on hits.
 
----
 
 ## 2. Make the Power-Ups
 
@@ -19,7 +17,6 @@
   - **Speed Boost**: Temporarily increases the player's ship speed.
 - **Action Items**: Design power-up sprites, implement power-up logic, and integrate with existing gameplay mechanics.
 
----
 
 ## 3. Fix the Images to Be Moving
 
@@ -27,7 +24,6 @@
 - **Current Issues**: Some images appear static or have jittery movements.
 - **Action Items**: Refactor the animation code, ensure proper frame updates, and check for performance issues that may affect smooth movement.
 
----
 
 ## 4. Fix the Speed of Enemies
 
@@ -35,7 +31,6 @@
 - **Current Issues**: Some enemies move too slowly, making the game less challenging, while others are too fast, making them difficult to defeat.
 - **Action Items**: Set appropriate speed parameters for each enemy type and test the gameplay balance.
 
----
 
 ## 5. Make the Enemies the Same Width
 
@@ -43,7 +38,6 @@
 - **Current Issues**: Some enemies are disproportionately wide, affecting gameplay and collision detection.
 - **Action Items**: Resize and standardize enemy sprites, adjust hitboxes accordingly, and test for any gameplay impacts.
 
----
 
 ## 6. [Blank for Additional Notes]
 

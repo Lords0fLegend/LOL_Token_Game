@@ -55,4 +55,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-**Lords OF Legend** © 2024 YourGameStudio. All rights reserved.
+**Lords OF Legend** © 2024 MGSGameStudio. All rights reserved.

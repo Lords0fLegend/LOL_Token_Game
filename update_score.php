@@ -73,4 +73,3 @@ if ($user) {
 
 // Close connection
 $conn->close();
-?>

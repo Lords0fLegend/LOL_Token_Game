@@ -18,6 +18,7 @@ $user_id = $_SESSION['User_ID'];
     <title>Lords Of Legend Laser Game</title>
     <style>
         body {
+            
             margin: 0;
             display: flex;
             flex-direction: column;
@@ -32,9 +33,10 @@ $user_id = $_SESSION['User_ID'];
             display: flex;
             flex-direction: column;
             align-items: center;
+            
         }
         #gameCanvas {
-            background-color: #000;
+            background-image: url('space_background.png');
             display: block;
             margin-bottom: 10px;
         }
@@ -75,6 +77,7 @@ $user_id = $_SESSION['User_ID'];
             <button id="pauseBtn">Pause</button>
             <button id="resumeBtn" disabled>Resume</button>
             <button id="resetBtn">Reset</button>
+            <button id="logOutBtn">Log Out</button>
         </div>
     </div>
     <script>
@@ -102,6 +105,19 @@ $user_id = $_SESSION['User_ID'];
         const SHOW_CENTRE_DOT = false;
         const TEXT_FADE_TIME = 2.5;
         const TEXT_SIZE = 40;
+// Load background images (you can use multiple layers for parallax effect)
+const background1 = new Image();
+background1.src = "space_background.png"; // Further background
+
+const background2 = new Image();
+background2.src = "space_background.png"; // Closer background
+
+// Background position
+let bg1X = 0;
+let bg2X = 0;
+
+const bg1Speed = 1; // Speed for further background
+const bg2Speed = 2; // Speed for closer background
 
         var canv = document.getElementById("gameCanvas");
         var ctx = canv.getContext("2d");
@@ -117,7 +133,7 @@ $user_id = $_SESSION['User_ID'];
         document.getElementById("pauseBtn").addEventListener("click", pauseGame);
         document.getElementById("resumeBtn").addEventListener("click", resumeGame);
         document.getElementById("resetBtn").addEventListener("click", resetGame);
-
+         document.getElementById("logOutBtn").addEventListener("click", logOut);
         document.addEventListener("keydown", keyDown);
         document.addEventListener("keyup", keyUp);
 
@@ -125,6 +141,63 @@ $user_id = $_SESSION['User_ID'];
         newGame();
         resumeGame(); // Start the game loop immediately after setup
 
+     function logOut() {
+    // Update scores
+    sendGameData();
+    
+    // Logout of current session
+    fetch('logout.php', {
+        method: 'POST',
+        credentials: 'same-origin' // Include session cookies
+    })
+    .then(response => {
+        console.log('HTTP Status Code:', response.status);  // Log the status code
+        
+        if (response.ok) {
+            return response.json();  // Parse the response as JSON
+        } else {
+            console.error('Logout failed with status:', response.status);
+            throw new Error('Logout failed.');
+        }
+    })
+    .then(data => {
+        console.log(data.message);  // Log the success message from the server
+        // Redirect to index.php after successful logout
+        window.location.href = 'index.php';
+    })
+    .catch(error => {
+        console.error('Error during logout:', error);
+    });
+}
+
+
+
+
+             
+
+
+
+
+        function updateBackground() {
+    // Move background layers
+    bg1X -= bg1Speed;
+    bg2X -= bg2Speed;
+
+    // Reset background position to create an endless loop
+    if (bg1X <= -canv.width) {
+        bg1X = 0;
+    }
+    if (bg2X <= -canv.width) {
+        bg2X = 0;
+    }
+
+    // Draw backgrounds
+    ctx.drawImage(background1, bg1X, 0, canv.width, canv.height);
+    ctx.drawImage(background1, bg1X + canv.width, 0, canv.width, canv.height);
+
+    ctx.drawImage(background2, bg2X, 0, canv.width, canv.height);
+    ctx.drawImage(background2, bg2X + canv.width, 0, canv.width, canv.height);
+}
         function updateUI() {
             document.getElementById("lives").textContent = `Lives: ${lives}`;
             document.getElementById("score").textContent = `Score: ${score}`;
@@ -335,7 +408,7 @@ $user_id = $_SESSION['User_ID'];
 
             var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
             scoreHigh = scoreStr ? parseInt(scoreStr) : 0;
-
+            updateBackground();
             newLevel();
             updateUI();
         }
@@ -480,27 +553,6 @@ $user_id = $_SESSION['User_ID'];
                         ship.blinkNum--;
                     }
                 }
-            } else {
-                ctx.fillStyle = "darkred";
-                ctx.beginPath();
-                ctx.arc(ship.x, ship.y, ship.r * 1.7, 0, Math.PI * 2, false);
-                ctx.fill();
-                ctx.fillStyle = "red";
-                ctx.beginPath();
-                ctx.arc(ship.x, ship.y, ship.r * 1.4, 0, Math.PI * 2, false);
-                ctx.fill();
-                ctx.fillStyle = "orange";
-                ctx.beginPath();
-                ctx.arc(ship.x, ship.y, ship.r * 1.1, 0, Math.PI * 2, false);
-                ctx.fill();
-                ctx.fillStyle = "yellow";
-                ctx.beginPath();
-                ctx.arc(ship.x, ship.y, ship.r * 0.8, 0, Math.PI * 2, false);
-                ctx.fill();
-                ctx.fillStyle = "white";
-                ctx.beginPath();
-                ctx.arc(ship.x, ship.y, ship.r * 0.5, 0, Math.PI * 2, false);
-                ctx.fill();
             }
 
             if (SHOW_BOUNDING) {

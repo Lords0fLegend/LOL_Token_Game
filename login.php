@@ -29,7 +29,7 @@ try {
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Sanitize input
-        $username = filter_var(trim($_POST['username']), FILTER_SANITIZE_STRING);
+        $username = trim($_POST['username']);
         $password = trim($_POST['password']);
 
         // Prepare and execute the SQL statement
@@ -75,5 +75,3 @@ try {
     error_log($e->getMessage());
     redirectWithError(null, "An error occurred. Please try again later.");
 }
-
-

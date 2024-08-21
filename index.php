@@ -77,7 +77,6 @@
                 ?>
             </div>
         <?php endif; ?>
-        ?>
         <form action="login.php" method="POST">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -93,4 +92,3 @@
     </div>
 </body>
 </html>
-
